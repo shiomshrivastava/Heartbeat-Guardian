@@ -1,12 +1,22 @@
-# Heart ECG Analysis Project
+# Heartbeat Guardian
 
-A Streamlit-based web application for ECG data analysis and visualization with machine learning capabilities.
+A smart ECG monitoring and analysis system that combines hardware and software to provide real-time heart health monitoring. This project integrates an ECG sensor with a user-friendly web interface built using Streamlit, offering advanced analysis and visualization capabilities.
+
+## 🌟 Key Features
+
+- Real-time ECG data monitoring and visualization
+- Secure user authentication system
+- Machine learning-based anomaly detection
+- Interactive data visualization with Plotly
+- Natural language processing for medical reports
+- Secure data storage with MongoDB
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. Activate the Conda environment
-conda activate shiomenv
+# 1. Create and activate the Python environment
+python -m venv venv
+.\venv\Scripts\activate  # Windows
 
 # 2. Install dependencies
 pip install -r requirements.txt
@@ -17,18 +27,20 @@ streamlit run app.py
 
 ## 📋 Prerequisites
 
-- Python 3.13 or higher
-- Anaconda or Miniconda
-- MongoDB (for user authentication)
-- ECG Sensor (for data collection)
+- Python 3.x
+- ECG Sensor Hardware
+- MongoDB (for user data storage)
+- USB port for sensor connection
 
-## 🔧 Detailed Setup Guide
+## 🔧 Setup Guide
 
-### First Time Setup
+### Software Setup
 
-1. **Install Anaconda** (Skip if already installed)
-   - Download from [Anaconda's website](https://www.anaconda.com/products/individual)
-   - Follow the installation instructions for Windows
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/shiomshrivastava/Heartbeat-Guardian.git
+   cd Heartbeat-Guardian
+   ```
 
 2. **Create a New Conda Environment**
    ```bash
@@ -76,63 +88,69 @@ streamlit run app.py
    - Open your browser
    - Navigate to `http://localhost:8501`
 
-## 🛠 Troubleshooting
+## 🛠️ Troubleshooting
 
-### Common Issues and Solutions
-
-1. **"Streamlit command not found"**
-   ```bash
-   conda activate shiomenv
-   pip install streamlit
-   ```
-
-2. **Missing Package Errors**
-   ```bash
-   pip install [package_name]
-   ```
-
-3. **NLTK Resource Errors**
-   ```bash
-   python -m nltk.downloader [resource_name]
-   ```
-
-4. **MongoDB Connection Issues**
-   - Check if MongoDB is running
-   - Verify connection string in application
-   - Ensure MongoDB service is started
-
-5. **ECG Sensor Not Detected**
+1. **Sensor Connection Issues**
    - Check USB connection
-   - Verify correct COM port in Device Manager
-   - Update port settings in application
+   - Verify COM port in Device Manager
+   - Ensure correct port is configured in application
 
-## 📦 Main Features
+2. **MongoDB Connection Error**
+   - Verify MongoDB service is running
+   - Check connection string
+   - Ensure database permissions are correct
 
-- Real-time ECG data visualization
-- User authentication system
-- Machine learning-based analysis
-- Interactive data plots
-- Natural language processing capabilities
+3. **Package Installation Issues**
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
 
-## 🔍 Project Structure
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## � License
+
+This project is licensed under the terms specified in the `LICENSE` file.
+
+## 🙏 Acknowledgments
+
+- Thanks to all contributors
+- ECG sensor documentation and community
+- Streamlit community for excellent documentation
+
+## 🏗️ Project Structure
 
 ```
-Heart/
-├── app.py              # Main application file
-├── requirements.txt    # Python dependencies
-├── ECG.json           # Configuration file
+Heartbeat-Guardian/
+├── app.py              # Main Streamlit application
+├── ECG.json           # Sensor configuration
+├── requirements.txt   # Python dependencies
+├── iot_code/
+│   └── iot_code.ino  # Arduino/ESP32 code for ECG sensor
 └── pages/
-    ├── login.py       # Login page
-    └── signup.py      # Signup page
+    ├── login.py      # User authentication
+    └── signup.py     # User registration
 ```
 
-## 💻 Development Notes
+## � Dependencies
 
-- Minimum Python version: 3.13
-- Tested on Windows 11
-- Uses Streamlit for web interface
-- Requires active MongoDB instance
-- ECG sensor must be connected
+Key packages required:
+- streamlit>=1.50.0 - Web interface
+- pyserial>=3.5 - Serial communication
+- plotly>=6.3.0 - Data visualization
+- numpy>=2.3.1 - Numerical computations
+- pandas>=2.3.3 - Data manipulation
+- sentence-transformers>=4.1.0 - NLP processing
+- nltk>=3.9.2 - Natural language toolkit
+- pymongo>=4.13.0 - MongoDB integration
+- scikit-learn>=1.7.1 - Machine learning
+- bcrypt>=4.3.0 - Password hashing
 
 ## 🤝 Contributing
 
