@@ -1,9 +1,12 @@
 import streamlit as st
 from pymongo import MongoClient
 import bcrypt
+import os
+from dotenv import load_dotenv
+import time
 
-# MongoDB Setup
-MONGODB_URI = "mongodb://localhost:27017/heartbot"  # Replace with your MongoDB Atlas URI
+load_dotenv()
+MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/heartbot")
 DB_NAME = "heartbot_db"
 
 @st.cache_resource
@@ -14,51 +17,126 @@ client = get_mongo_client()
 db = client[DB_NAME]
 users_collection = db["users"]
 
-def hash_password(password):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+def hash_password(pw): return bcrypt.hashpw(pw.encode('utf-8'), bcrypt.gensalt(12))
 
-def create_user(username, password):
-    if users_collection.find_one({"username": username}):
-        return False
-    hashed_pw = hash_password(password)
-    users_collection.insert_one({"username": username, "password": hashed_pw})
+def create_user(u, p):
+    if users_collection.find_one({"username": u}): return False
+    users_collection.insert_one({"username": u, "password": hash_password(p), "created_at": time.time()})
     return True
 
-# Page Setup
-st.set_page_config(page_title="HeartBot Signup", page_icon="✨", layout="centered")
+st.set_page_config(page_title="HeartBot | Sign Up", page_icon="Heart", layout="centered")
+st.markdown("<style>[data-testid='stSidebarNav'] {display: none;}</style>", unsafe_allow_html=True)
 
-# Hide Streamlit's default sidebar navigation
-st.markdown(
-    """
-    <style>
-    [data-testid="stSidebarNav"] {display: none;}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("""
+<style>
+    .main {
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        color: #fff;
+        min-height: 100vh;
+        padding: 3rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    [data-testid="stVerticalBlock"] > [data-testid="stBlock"] {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        max-width: 450px;
+        width: 100%;
+        margin: 0 auto;
+    }
+    .title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align  center;
+        color: #f72585;
+        margin: 0 0 0.5rem 0;
+    }
+    .subtitle {
+        text-align: center;
+        color: #cccccc;
+        margin-bottom: 2.5rem;
+        font-size: 1.1rem;
+    }
+    .stTextInput > div > div > input {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 1rem;
+    }
+    .stTextInput > div > div > input::placeholder {color: #aaa;}
 
-# Custom Sidebar (optional branding)
-st.sidebar.title("💓 HeartBot")
-st.sidebar.markdown("Heart Health Companion")
+    /* EYE ICON VISIBLE & PINK */
+    button[kind="secondary"] {
+        background: transparent !important;
+        border: none !important;
+        color: #f72585 !important;
+        padding: 0 8px !important;
+    }
+    button[kind="secondary"]:hover {
+        color: #ff6bcb !important;
+    }
 
-# Signup UI
-st.title("✨ HeartBot Signup")
-st.markdown("**Create a new account to track your heart health**")
+    .stButton > button {
+        background: linear-gradient(45deg, #f72585, #7209b7);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 14px;
+        font-weight: 600;
+        width: 100%;
+        margin-top: 1.5rem;
+        font-size: 1.1rem;
+    }
+    .stButton > button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(247, 37, 133, 0.4);
+    }
+    .link {
+        text-align: center;
+        margin-top: 2rem;
+        font-size: 1rem;
+    }
+    .link a {
+        color: #f72585;
+        text-decoration: none;
+        font-weight: 600;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-with st.form("signup_form"):
-    username = st.text_input("Username", placeholder="Choose a unique username")
-    password = st.text_input("Password", type="password", placeholder="Choose a strong password")
-    confirm_password = st.text_input("Confirm Password", type="password", placeholder="Re-enter your password")
-    submit = st.form_submit_button("Sign Up")
-    if submit:
-        if password != confirm_password:
-            st.error("Passwords do not match!")
-        elif len(password) < 6:
-            st.error("Password must be at least 6 characters long!")
-        elif create_user(username, password):
-            st.success(f"Account created for {username}! Please log in.")
-            st.markdown("[Go to Login](./login)")
-        else:
-            st.error("Username already exists!")
+with st.container():
+    st.markdown("<h1 class='title'>Create Account</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='subtitle'>Join HeartBot and monitor your heart health</p>", unsafe_allow_html=True)
 
-st.markdown("Already have an account? [Go to Login](./login)")
+    with st.form("signup_form", clear_on_submit=True):
+        u = st.text_input("Username", placeholder="Choose a unique username")
+        p = st.text_input("Password", type="password", placeholder="Min 6 characters")
+        cp = st.text_input("Confirm Password", type="password", placeholder="Retype password")
+        submit = st.form_submit_button("Sign Up")
+
+        if submit:
+            if not u or not p or not cp:
+                st.error("Please fill all fields")
+            elif len(p) < 6:
+                st.error("Password must be at least 6 characters")
+            elif p != cp:
+                st.error("Passwords do not match")
+            elif create_user(u, p):
+                st.success(f"Account created: **{u}**!")
+                st.balloons()
+                st.markdown("### [Go to Login →](./login)")
+            else:
+                st.error("Username already taken")
+
+    st.markdown("""
+    <div class='link'>
+        Already have an account? <a href='./login'>Login here</a>
+    </div>
+    """, unsafe_allow_html=True)
